@@ -1,0 +1,61 @@
+<html lang='en'>
+    <head>
+        
+    <title>First Page for James</title>
+    <script>
+    "use strict";
+
+    function doStuff(){
+        console.log("Do Stuff");
+        let a = 10;
+        const PI = 3.14;
+        if(true)
+        {
+            //because variable "b" is defined as a var, it can be seen by console.log even though console.log is outside the scope of this if statement
+            //this is because JS var uses "function level scoping" instead of "block level scoping", so it can be used outside of the scope it was defined in
+            var b = 20;
+            var c = 100;
+        }
+        console.log(a);
+        console.log(b);
+        console.log(c);
+        console.log(PI);
+    }
+    doStuff();
+
+    //two ways to do the same thing
+    let arr = ["red","green","blue"];
+    arr.forEach(function(color){console.log("I like " + color);});
+
+    let logger = function(color){console.log("I like " + color)};
+    arr.forEach(logger);
+
+    window.onload = init;
+    function init(){
+        //1 - 
+        //2 - get reference to field, paragraph, and button
+        const nameField = document.querySelector("input");
+        const button = document.querySelector("button");
+        const paragraph = document.querySelector("p");
+        //debugger;
+        //3 - hook up onclick event to button
+        button.onclick = function(){
+            let name = nameField.value;
+            paragraph.innerHTML = "Hello " + name + ", you are a weenie.";
+        };
+        //4 - create greeting
+    }
+    
+    </script>
+    <style>
+        *{
+            font-size:150%
+        }
+    </style>
+</head>
+<body>
+<button>Click ME</button>
+<input placeholder="Enter your name">
+<p>???</p>
+</body>
+</html>
