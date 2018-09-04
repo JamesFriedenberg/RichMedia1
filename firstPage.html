@@ -31,6 +31,7 @@
     arr.forEach(logger);
 
     window.onload = init;
+
     function init(){
         //1 - 
         //2 - get reference to field, paragraph, and button
@@ -39,12 +40,30 @@
         const paragraph = document.querySelector("p");
         //debugger;
         //3 - hook up onclick event to button
-        button.onclick = function(){
+        button.addEventListener("click", updatePage) 
+        function updatePage(){
             let name = nameField.value;
             paragraph.innerHTML = "Hello " + name + ", you are a weenie.";
         };
         //4 - create greeting
     }
+
+    function addThem(num1, num2){
+        let sum = num1 + num2;
+        return sum;
+    }
+
+    function addThem2(num1=0, num2=0){
+        let sum = num1 + num2;
+        return sum;
+    }
+
+    //const addThem3 = (num1=0, num2=0) => {return num1 + num2};
+    const addThem3 = (num1=0, num2=0) => num1 + num2;
+
+    console.log(addThem(6,7));
+    console.log(addThem2(10,7));
+    console.log(addThem3(6,70));
     
     </script>
     <style>
