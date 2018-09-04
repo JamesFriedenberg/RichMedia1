@@ -39,7 +39,7 @@
 		ctx.fillStyle = "black";
 		ctx.lineWidth = "15";
 		ctx.beginPath();			
-		ctx.arc(150, 300, 125, 0, Math.PI * 2, false); // draws a circle at 200,200 with a 125-pixel radius
+		ctx.arc(150, 350, 125, 0, Math.PI * 2, false); // draws a circle at 200,200 with a 125-pixel radius
         ctx.closePath();            
         ctx.stroke();               
         ctx.fill();    
@@ -51,9 +51,9 @@
 		ctx.fillStyle = "pink";
 		ctx.lineWidth = "15";
 		ctx.beginPath(); 
-		ctx.moveTo(500,200);  	// start the "pen" at x=20, y=100 
-		ctx.lineTo(600,200); 	// point #1 -> draw line to x=620, y=100
-		ctx.lineTo(550,300);	// point #2 -> draw line to x=340, y=400
+		ctx.moveTo(500,300);  	// start the "pen" at x=20, y=100 
+		ctx.lineTo(600,300); 	// point #1 -> draw line to x=620, y=100
+		ctx.lineTo(550,400);	// point #2 -> draw line to x=340, y=400
 		ctx.closePath(); 	// the path will automatically close back to point #1
 		ctx.stroke();
 		ctx.fill(); 
@@ -61,8 +61,8 @@
 
 		//rounded edge triangle
 		ctx.save();
-		ctx.strokeStyle = "orange";
-		ctx.fillStyle = "pink";
+		ctx.strokeStyle = "grey";
+		ctx.fillStyle = "green";
 		ctx.lineWidth = "15";
 		ctx.beginPath();
 		ctx.moveTo(50, 100);             	// P0
