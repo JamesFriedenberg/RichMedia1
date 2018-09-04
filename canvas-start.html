@@ -20,16 +20,58 @@
 	
 	function init(){
 		let ctx = document.querySelector('canvas').getContext('2d');
+
+		//rectangle
         ctx.save();                 // A - optionally, save the drawing state attributes and CTM
         ctx.strokeStyle = "red";    // B - optionally, change the values of one or more drawing state attributes
         ctx.fillStyle = "yellow";   // B
         ctx.lineWidth = "10";       // B
         ctx.beginPath();            // C - describe a path
-        ctx.rect(20,20,200,200);    // C
-        ctx.closePath();            // C
-        ctx.stroke();               // D - draw! i.e. make the path visible
-        ctx.fill();                 // D - swap the order of stroke() and fill() to see what happens to the drawing
-        ctx.restore();              // E - optionally, restore the saved values of drawing state attributes and CTM
+        ctx.rect(20,20,200,200);	// C
+		ctx.closePath();    		// C
+		ctx.stroke();				// D - draw! i.e. make the path visible
+		ctx.fill();                 // D - swap the order of stroke() and fill() to see what happens to the drawing
+		ctx.restore();              // E - optionally, restore the saved values of drawing state attributes and CTM
+		
+		//circle
+		ctx.save();
+		ctx.strokeStyle = "blue";
+		ctx.fillStyle = "black";
+		ctx.lineWidth = "15";
+		ctx.beginPath();			
+		ctx.arc(150, 300, 125, 0, Math.PI * 2, false); // draws a circle at 200,200 with a 125-pixel radius
+        ctx.closePath();            
+        ctx.stroke();               
+        ctx.fill();    
+		ctx.restore();
+
+		//triangle
+		ctx.save();
+		ctx.strokeStyle = "orange";
+		ctx.fillStyle = "pink";
+		ctx.lineWidth = "15";
+		ctx.beginPath(); 
+		ctx.moveTo(500,200);  	// start the "pen" at x=20, y=100 
+		ctx.lineTo(600,200); 	// point #1 -> draw line to x=620, y=100
+		ctx.lineTo(550,300);	// point #2 -> draw line to x=340, y=400
+		ctx.closePath(); 	// the path will automatically close back to point #1
+		ctx.stroke();
+		ctx.fill(); 
+        ctx.restore();
+
+		//rounded edge triangle
+		ctx.save();
+		ctx.strokeStyle = "orange";
+		ctx.fillStyle = "pink";
+		ctx.lineWidth = "15";
+		ctx.beginPath();
+		ctx.moveTo(50, 100);             	// P0
+		ctx.arcTo(300, 425, 550, 40, 100); 	// P1, P2 and the radius
+		ctx.lineTo(550, 100);               // top line: line segment between P0 & P2     
+		ctx.closePath();
+		ctx.stroke();               
+		ctx.fill();
+		ctx.restore();  
 	}
 	</script>
 </body>
