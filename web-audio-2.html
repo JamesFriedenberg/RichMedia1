@@ -29,7 +29,15 @@
 	
 	// this is where we hook up the <audio> element to the analyserNode
 	let sourceNode = audioCtx.createMediaElementSource(audioElement); 
-	sourceNode.connect(analyserNode);
+
+	// https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode
+	let biquadFilter = audioCtx.createBiquadFilter();
+	biquadFilter.type = "highshelf";
+	biquadFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+	biquadFilter.gain.setValueAtTime(25, audioCtx.currentTime);
+
+	sourceNode.connect(biquadFilter);
+	biquadFilter.connect(analyserNode);
 	
 	// here we connect to the destination i.e. speakers
 	analyserNode.connect(audioCtx.destination);
