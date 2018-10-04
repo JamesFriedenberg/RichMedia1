@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Web Audio Visualizer</title>
+	<style>
+	body {
+        background: rgb(160, 154, 121);
+        font-family: tahoma, verdana, sans serif;
+    }
+
+	@font-face {
+    	font-family: beach;
+    	src: url(media/beach.otf);
+	}
+	
+	#fsButton {
+	    background-color: rgb(172, 172, 172);
+	    border: none;
+	    color: rgb(0, 0, 0);
+	    padding: 2% 2%;
+	    text-align: center;
+	    display: block;
+	    font-size: 16px;
+	}
+
+    canvas {
+        padding-left: 0;
+    	padding-right: 0;
+    	margin-left: auto;
+    	margin-right: auto;
+		margin-top: 10%;
+    	display: block;
+    	width: 640px;
+        box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+        background: rgb(0,0,100);
+    }
+
+	#controls-container {
+  		width: 550px;
+  		margin-right: 3em;
+		margin-top: -28em;
+		background-color: rgb(68, 119, 230);
+		float: right;
+		border-style:groove;
+		border-color:rgb(68, 99, 139);
+		border-width: .5em;
+		font-family:Verdana, Geneva, Tahoma, sans-serif;
+	}
+
+	#trackContainer {
+		width: 500px;
+		margin-left:2em;
+		padding-top:4%;
+	}
+
+	h1 {
+		font-family: beach;
+		font-size:3em;
+	}
+
+	#checkboxContainer {
+		margin-left: 2em;
+	}
+
+	#sliderContainer {
+		margin-left: 2em;
+	}
+
+	#status {
+		margin-left: 2em;
+	}
+	</style>
+	<script>
+	//Use an IIFE to control variable scope
+	(function(){
+		"use strict";
+		
+		let NUM_SAMPLES = 256;
+		let SOUND_1 = 'media/Spongebob.mp3';
+		let SOUND_2 = 'media/Plants Vs Zombies.mp3';
+		let SOUND_3 = 'media/Bellyache.mp3';
+		let audioElement;
+		let analyserNode;
+		let canvas,ctx, maxRadius=200,maxLength=200,invert=false,noise=false,grayscale=false,waveform=false,distortion=false,distortionAmount=0;
+		
+		function init(){
+			// set up canvas stuff
+			canvas = document.querySelector('canvas');
+			ctx = canvas.getContext("2d");
+			// get reference to <audio> element on page
+			audioElement = document.querySelector('audio');
+			
+			// call our helper function and get an analyser node
+			analyserNode = createWebAudioContextWithAnalyserNode(audioElement);
+			
+			// get sound track <select> and Full Screen button working
+			setupUI();
+			
+			// load and play default sound into audio element
+			playStream(audioElement,SOUND_1);
+
+			// start animation loop
+			update();
+		}
+		
+		function createWebAudioContextWithAnalyserNode(audioElement) {
+			let audioCtx, analyserNode, sourceNode,distortionNode;
+			// create new AudioContext
+			// The || is because WebAudio has not been standardized across browsers yet
+			// http://webaudio.github.io/web-audio-api/#the-audiocontext-interface
+			audioCtx = new (window.AudioContext || window.webkitAudioContext);
+			
+			// create an analyser node
+			analyserNode = audioCtx.createAnalyser();
+			
+			/*
+			We will request NUM_SAMPLES number of samples or "bins" spaced equally 
+			across the sound spectrum.
+			
+			If NUM_SAMPLES (fftSize) is 256, then the first bin is 0 Hz, the second is 172 Hz, 
+			the third is 344Hz. Each bin contains a number between 0-255 representing 
+			the amplitude of that frequency.
+			*/ 
+			
+			// fft stands for Fast Fourier Transform
+			analyserNode.fftSize = NUM_SAMPLES;
+			
+			sourceNode = audioCtx.createMediaElementSource(audioElement); 
+			distortionNode = audioCtx.createWaveShaper();
+			
+			if(distortion)
+			{
+				sourceNode.connect(distortionNode);
+			}
+
+			// this is where we hook up the <audio> element to the analyserNode
+			sourceNode.connect(analyserNode);
+			
+			// here we connect to the destination i.e. speakers
+			analyserNode.connect(audioCtx.destination);
+			return analyserNode;
+		}
+		
+		function setupUI(){
+			//connect all elements of the UI with functionality
+			document.querySelector("#trackSelect").onchange = function(e){
+				playStream(audioElement,e.target.value);
+			};
+
+			document.querySelector("#bgColorSelect").onchange = function(e){
+				document.body.style.backgroundColor = e.target.value;
+			};
+			
+			document.querySelector("#fsButton").onclick = function(){
+				requestFullscreen(canvas);
+			};
+
+			document.querySelector("#slider1").onchange = function(e){
+			 	 maxRadius = e.target.value;
+			};
+
+			document.querySelector("#slider2").onchange = function(e){
+			 	 maxLength = e.target.value;
+			};
+
+			document.querySelector("#invert").onchange = function(){
+				invert = !invert;
+			}
+
+			document.querySelector("#noise").onchange = function(){
+				noise = !noise;
+			}
+
+			document.querySelector("#grayscale").onchange = function(){
+				grayscale = !grayscale;
+			}
+
+			document.querySelector("#waveform").onchange = function(){
+				waveform = !waveform;
+			}
+			
+			//document.querySelector('#distortionSlider').value = distortionAmount;
+			//document.querySelector('#distortionSlider').onchange = e => {
+  			//distortionAmount = e.target.value;
+  			//distortionFilter.curve = null;
+  			//distortionFilter.curve = makeDistortionCurve(distortionAmount);
+
+			//sets all of the UI boolean values to the value of their respective checkbox
+			noise = document.querySelector("#noise").checked;
+			invert = document.querySelector("#invert").checked;
+			grayscale = document.querySelector("#grayscale").checked;
+			waveform = document.querySelector("#waveform").checked;
+			distortion = document.querySelector("#distortion").checked;
+		}
+		
+		function playStream(audioElement,path){
+			audioElement.src = path;
+			audioElement.play();
+			audioElement.volume = 0.2;
+			document.querySelector('#status').innerHTML = "Now playing: " + path;
+		}
+
+		function manipulatePixels(){
+			// i) Get all of the rgba pixel data of the canvas by grabbing the
+			// ImageData Object
+			// https://developer.mozilla.org/en-US/docs/Web/API/ImageData
+			let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+			// ii) imageData.data is an 8-bit typed array - values range from 0-255
+			// imageData.data contains 4 values per pixel: 4 x canvas.width x
+			// canvas.height = 1024000 values!
+			// we’re looping through this 60 FPS - wow!
+			let data = imageData.data;
+			let length = data.length;
+			let width = imageData.width;
+
+			// iii) Iterate through each pixel
+			// we step by 4 so that we can manipulate 1 pixel per iteration
+			// data[i] is the red value
+			// data[i+1] is the green value
+			// data[i+2] is the blue value
+			// data[i+3] is the alpha value
+			for (var i = 0; i < length; i += 4){
+				//invert every color channel
+				if(invert){
+					let red = data[i], green = data[i+1], blue = data[i+2];
+					data[i] = 255 - red; // set red value
+					data[i+1] = 255 - green; // set blue value
+					data[i+2] = 255 - blue; // set green value
+					// data[i+3] is the alpha but we’re leaving that alone
+				}
+				//noise
+				if (noise && Math.random() < .10){
+					data[i] = data[i +1] = data[i+2] = 128; // gray noise
+					data[i+3] = 255; // alpha
+				}
+				//grayscale
+				if (grayscale){
+					let luma = data[i] * 0.2126 + data[i+1] * 0.7152 + data[i+2] * 0.0722;
+					data[i] = luma;
+					data[i+1] = luma;
+					data[i+2] = luma;
+				}
+			}
+			// put the modified data back on the canvas
+			ctx.putImageData(imageData, 0, 0);
+		}
+
+		function update() { 
+			// this schedules a call to the update() method in 1/60 seconds
+			requestAnimationFrame(update);
+			
+			// create a new array of 8-bit integers (0-255)
+			let data = new Uint8Array(NUM_SAMPLES/2); 
+			
+			// populate the array with the frequency data
+			analyserNode.getByteFrequencyData(data);
+		
+			if(waveform){
+				analyserNode.getByteTimeDomainData(data); // waveform data
+			}
+			
+			// DRAW!
+			ctx.clearRect(0,0,800,600);  
+
+			// loop through the data and draw!
+			for(let i=0; i<data.length; i++) { 
+				
+				// the higher the amplitude of the sample (bin) the taller the bar
+				// remember we have to draw our bars left-to-right and top-down
+				// ctx.fillRect(i * (barWidth + barSpacing),topSpacing + 256-data[i],barWidth,barHeight); 
+				
+				// draws inverted bars
+				// ctx.fillRect(640 - i * (barWidth+barSpacing),topSpacing+256-data[i],barWidth,barHeight);
+
+				let percent = data[i] / 255;
+				let circleRadius = percent * maxRadius;
+				let lineLength = percent * maxLength;
+
+				//sun w/ shining
+				ctx.save();
+				ctx.beginPath();
+				ctx.fillStyle = "rgba(239, 16, 16, .40)";
+				ctx.arc(400,180,circleRadius*2.0,0,Math.PI*3.75,false);
+				ctx.fill();
+				ctx.closePath();
+				ctx.restore();
+				
+				ctx.save();
+				ctx.beginPath();
+				ctx.fillStyle = "rgba(255, 97, 0, .50)";
+				ctx.arc(400,180,circleRadius*1.5,0,Math.PI*3.75,false);
+				ctx.fill();
+				ctx.closePath();
+				ctx.restore();
+
+				ctx.save();
+				ctx.beginPath();
+				ctx.fillStyle = "rgba(255, 255, 30, 1.0)";
+				ctx.arc(400,180,50,0,Math.PI*2,false);
+				ctx.fill();
+				ctx.closePath();
+				ctx.restore();
+				
+			}
+			
+			ctx.save();
+			ctx.fillStyle = makeColor(0,70,255,1.0);
+			ctx.fillRect(0,canvas.height/2,canvas.width,200);
+			ctx.restore();
+
+			drawIsland();
+
+			document.querySelector("#radiusContent").innerHTML = maxRadius;
+			document.querySelector("#lineLengthContent").innerHTML = maxLength;
+			manipulatePixels();
+		} 
+		
+		// HELPER
+		function makeColor(red, green, blue, alpha){
+			let color='rgba('+red+','+green+','+blue+', '+alpha+')';
+   			return color;
+		}
+		
+		// FULL SCREEN MODE
+		function requestFullscreen(element) {
+			if (element.requestFullscreen) {
+			  element.requestFullscreen();
+			} else if (element.mozRequestFullscreen) {
+			  element.mozRequestFullscreen();
+			} else if (element.mozRequestFullScreen) { // camel-cased 'S' was changed to 's' in spec
+			  element.mozRequestFullScreen();
+			} else if (element.webkitRequestFullscreen) {
+			  element.webkitRequestFullscreen();
+			}
+			// .. and do nothing if the method is not supported
+		};
+		
+		function drawIsland() {
+			ctx.save();
+			var grad = ctx.createLinearGradient(0, 0, 640, 0);
+                grad.addColorStop(0, 'rgb(255,0,0)');
+                grad.addColorStop(1 / 8, 'rgb(132, 91, 2)');
+                grad.addColorStop(2 / 8, 'rgb(132, 91, 2)');
+                grad.addColorStop(3 / 8, 'rgb(196, 136, 5)');
+                grad.addColorStop(4 / 8, 'rgb(232, 160, 4)');
+                grad.addColorStop(5 / 8, 'rgb(224, 187, 0)');
+                grad.addColorStop(1, 'rgb(255,255,0)');
+			ctx.fillStyle = grad;
+			ctx.beginPath();
+			ctx.moveTo(120,canvas.height/2 + 30);
+			ctx.lineTo(150,canvas.height/2);
+			ctx.lineTo(160,canvas.height/2 - 5);
+			ctx.lineTo(190,canvas.height/2 - 10);
+			ctx.lineTo(220,canvas.height/2 - 15);
+			ctx.lineTo(250,canvas.height/2 - 20);
+			ctx.lineTo(320,canvas.height/2 + 30);
+			ctx.closePath();
+			ctx.fill();
+			ctx.restore();
+
+		};
+
+		window.addEventListener("load",init);
+	}());
+		
+	</script>
+</head>
+<body>
+	<h1 id="heading">James Friedenberg's Audio Visualizer</h1>
+	<canvas id="canvas" width="640" height="400"></canvas>
+	<div id="controls-container">
+		<audio controls loop></audio>
+		<div id="trackContainer">
+			<label>Track: 
+				<select id="trackSelect">
+					<option value="media/Spongebob.mp3">Spongebob Ending</option>
+					<option value="media/Plants Vs Zombies.mp3">Plants Vs Zombies Choose Your Plants</option>
+					<option value="media/Bellyache.mp3">Bellyache</option>
+				</select>
+			</label>
+			<label>BG Color: 
+				<select id="bgColorSelect">
+					<option value="rgb(160, 154, 121)">Original Tan</option>
+					<option value="rgb(83, 145, 244)">Light Blue</option>
+					<option value="rgb(252, 10, 167)">Pink</option>
+					<option value="rgb(16, 178, 45)">Green</option>
+					<option value="rgb(130, 29, 1)">Maroon</option>
+					<option value="rgb(1, 50, 130)">Dark Blue</option>
+					<option value="rgb(120, 0, 124)">Purple</option>
+				</select>
+			</label>
+		</div>
+			
+		<div id="checkboxContainer">
+			<p><input id="invert" type="checkbox"> Invert</p>
+			<p><input id="noise" type="checkbox"> Noise</p>
+			<p><input id="grayscale" type="checkbox"> Grayscale</p>
+			<p><input id="waveform" type="checkbox"> Waveform</p>
+			<p><input id="distortion" type="checkbox"> Distortion</p>
+			<button id="fsButton">Go Full Screen</button><br>
+		</div>
+		<div id="sliderContainer">
+			<label for="slider1">Radius Changer</label>
+			<input id="slider1" type ="range" min ="0" max="200" step ="25" value ="200"/>
+			<p id="radiusContent">???</p>
+			<label for="slider2">Line Length Changer</label>
+			<input id="slider2" type ="range" min ="0" max="200" step ="25" value ="200"/>
+			<p id="lineLengthContent">???</p>
+		</div>
+		<p id="status">???</p>
+	</div>
+</body>
+</html>
