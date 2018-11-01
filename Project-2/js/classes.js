@@ -1,4 +1,4 @@
-"use strict";
+/*jshint esversion: 6 */
 
 class PlayerSprite{
     //every player instance needs basic movement variables and a tracker for their score and the level they are currently on

@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const screenWidth = 1280;
@@ -6,11 +8,11 @@ let elementSprites = [];
 let baseSprites = [];
 var level = 1;
 let menuState = "main";
-let imgs = ["basic.png","bg.png","favicon.png","fire.png","negative.png","stone.png","water.png","wind.png"];
+let imgs = ["basic","bg","favicon","fire","negative","stone.png","water.png","wind.png"];
 let drawingStack = 0;
-let player = new PlayerSprite(0,0);
+let player = new PlayerSprite(0,0,0,0,0);
 
-var KEY = {
+let KEY = {
     BACKSPACE: 8,
     TAB:       9,
     RETURN:   13,
@@ -31,6 +33,7 @@ var KEY = {
     TILDA:    192
   };
 
+/*
 document.addEventListener('keydown',    onkeydown,    false);
 document.addEventListener('keyup',      onkeyup,      false);
 
@@ -38,6 +41,7 @@ canvas.addEventListener('click',      onclick,      false);
 canvas.addEventListener('mousemove',   onmousemove,  false);
 canvas.addEventListener('touchstart', ontouchstart, false);
 canvas.addEventListener('touchmove',  ontouchmove,  false);
+*/
 
 init();
 
@@ -51,35 +55,44 @@ function loop(imgs){
 	requestAnimationFrame(loop);
 
     if(drawingStack == 0){
-        ctx.font = "72px Arial";
+        ctx.save();
+        ctx.font = "72px elemental";
         ctx.textAlign = "center"; 
         ctx.fillText("PRESS SPACEBAR",screenWidth/2,screenHeight/2);
+        ctx.restore();
     }
     
     document.body.onkeydown = function(e){
         if(e.keyCode == 32){
             drawingStack = 1;
-            if(drawingStack = 1){
-                ctx.save()
+            if(drawingStack == 1){
+                ctx.save();
                 ctx.beginPath();
                 ctx.fillStyle = "gray";
                 ctx.fillRect(0,0,canvas.width,canvas.height);
                 ctx.fill();
                 ctx.closePath();
                 ctx.restore();
-                drawingStack = 1;
                 ctx.save();
-                ctx.fillText("hi",screenWidth/2,screenHeight/2);
+                ctx.font = "32px elemental";
+                ctx.textAlign = "center";
+                ctx.fillText("This is the menu state.",screenWidth/2,screenHeight/2);
+                ctx.restore();
             }
         }
         if(e.keyCode == 13){
             drawingStack = 2;
-            ctx.font = "72px Arial";
+            ctx.save();
+            ctx.font = "32px elemental";
             ctx.fillStyle = "red";
             ctx.textAlign = "center";
+            ctx.save();
+            ctx.fillStyle = "black";
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.restore();
             ctx.fillText("This is the game state.",screenWidth/2,screenHeight/2);
         }
-    }
+    };
     
     /*
 	// loop through sprites
@@ -94,6 +107,7 @@ function loop(imgs){
     */
 }
 
+/*
 loadResources(imgs,loop);
 
 function loadResources(names, callback) {
@@ -109,7 +123,7 @@ function loadResources(names, callback) {
       result[name].src = "../images/" + name + ".png";
     }
 }
-
+*/
 /*
 function onkeydown(event) {
     ...
