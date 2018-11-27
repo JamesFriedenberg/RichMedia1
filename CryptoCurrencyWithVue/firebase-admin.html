@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Firebase Admin</title>
+</head>
+<body>
+<h1>High Scores</h1>
+<ul id="scoresList"><li>No data yet!</li></ul>
+
+<!-- #1 - link to Firebase goes here  -->
+<script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script>
+
+<script>
+/* #2 - The rest of the Firebase setup code goes here */
+
+// Initialize Firebase
+var config = {
+  apiKey: "AIzaSyBGq-0aG-jgLbMSJNu8wTHp0BZeNrhvyMM",
+  authDomain: "jeemzu-ea48b.firebaseapp.com",
+  databaseURL: "https://jeemzu-ea48b.firebaseio.com",
+  projectId: "jeemzu-ea48b",
+  storageBucket: "jeemzu-ea48b.appspot.com",
+  messagingSenderId: "133269870704"
+};
+firebase.initializeApp(config);
+	
+console.log(firebase); // #3 - make sure firebase is loaded
+	
+// #4 This is where the magic happens!
+firebase.database().ref("scores2").on("value", dataChanged, firebaseError);	
+function dataChanged(data){
+  let obj = data.val();
+  console.log(obj);
+  let bigString="";
+  for (let key in obj){   // use for..in to interate through object keys
+    let row = obj[key];
+    bigString += `<li>${row.userID } :  ${row.score}</li>`;
+    console.log(row);
+  }	
+  scoresList.innerHTML = bigString;
+}
+function firebaseError(error){
+  console.log(error);
+}
+
+firebase.database().ref("scores2/MADMAX").on("value", madmaxChanged, firebaseError);
+
+function madmaxChanged(data){
+  let obj = data.val();
+  console.log(`madmaxChanged = ${obj}`);
+  console.log(`userName= ${obj.userID}`);
+  console.log(`score= ${obj.score}`);
+}
+	
+</script>
+</body>
+</html>

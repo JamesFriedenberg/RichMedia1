@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+<script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBGq-0aG-jgLbMSJNu8wTHp0BZeNrhvyMM",
+      authDomain: "jeemzu-ea48b.firebaseapp.com",
+      databaseURL: "https://jeemzu-ea48b.firebaseio.com",
+      projectId: "jeemzu-ea48b",
+      storageBucket: "jeemzu-ea48b.appspot.com",
+      messagingSenderId: "133269870704"
+    };
+    firebase.initializeApp(config);
+</script>
+<script>
+console.log(firebase); // verify that firebase is loaded by logging the global it created for us
+ 
+// #1 - get a reference to the databse
+let database = firebase.database();
+ 
+// #2 - refer to a root node named `scores`
+let ref = database.ref('users/hawkins'); 
+// #3 - create some data
+let data = {
+    id: "hawkBOI",
+    firstName: "Stephen",
+    lastName: "Hawkins"
+};
+ 
+// #4 - send data, in this case we are adding it to the `scores` node
+ref.push(data);
+</script> 
+</body>
