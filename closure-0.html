@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+<script>
+function addThreeAndDouble(num){
+  num += 3; 	// local variable
+  newNum = doubleIt();
+  return newNum;
+  
+  function doubleIt(){	// local function
+    return num *2;
+  }
+}
+
+console.log(addThreeAndDouble(10));
+console.log(addThreeAndDouble(20));
+//console.log(doubleIt(30)); // error! `doubleIt()` is scoped to `addThreeAndDouble()`
+</script>
+</body>
+</html>

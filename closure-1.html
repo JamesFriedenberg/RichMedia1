@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+<script>
+function makeCounter(){
+	let num = 0; // num is a local variable created by makeCounter()
+	
+	return function(){  // this function is returned by makeCounter()
+		return num ++;  // this function has access to num and "remembers" its value
+	}
+}
+
+let countUp = makeCounter();
+console.log(countUp()); // 0
+console.log(countUp()); // 1
+console.log(countUp()); // 2
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+<script>
+let lib = (function(){
+		let a = "hello";
+		let b = "private";
+		
+		function doStuff(){
+			console.log(`Do Stuff! The value of b is "${b}"`);
+		}
+		
+		function setB(val){
+			b = val;
+		}
+		
+		// our public interface
+		return{
+			a: a,
+			doStuff: doStuff,
+			setB: setB
+		}
+	})();
+	
+lib.doStuff(); 		// Do Stuff! The value of b is "private"
+console.log(lib.a); 	// hello
+console.log(lib.b); 	// undefined
+lib.setB("hello again");
+lib.doStuff(); 		// hello again
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+<p id="counter1">???</p>
+<p id="counter2">???</p>
+	
+<script>
+makeTimer(counter1,10);
+makeTimer(counter2,-10);
+
+function makeTimer(element,step){
+	let counter = 0;
+	setInterval(function(){tick(element,step);},1000);
+	
+	function tick(element,step){
+		counter += step;
+		element.innerText = counter;
+	}
+}
+</script>
+</body>
+</html>

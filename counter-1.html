@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Counter 1</title>
+</head>
+<body>
+<button id="clickButton">Click Me!</button>
+<p id="label">???</p>
+
+<script>
+"use strict";
+let counter = 0;
+	
+function incrementCounter(){
+  counter ++;
+}
+
+function updateLabel(){
+  label.innerText = counter;
+}
+
+clickButton.addEventListener("click",incrementCounter);
+clickButton.addEventListener("click", updateLabel);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+<script>
+class Adder{
+	constructor(x){
+		this.x = x;
+	}
+	
+	add(y){
+		return this.x + y;
+	}
+}
+
+let add5 = new Adder(5);
+let add10 = new Adder(10);
+
+console.log(add5.add(2));  	// 7
+console.log(add5.add(22));  	// 27
+console.log(add10.add(2)); 	// 12
+console.log(add10.add(90)); 	// 100
+</script>
+</body>
+</html>

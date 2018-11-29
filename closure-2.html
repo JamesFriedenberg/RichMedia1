@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+<p id="counter1">???</p>
+<p id="counter2">???</p>
+	
+<script>
+function makeAdder(x) {
+  return function(y) {
+    return x + y;
+  };
+}
+
+var add5 = makeAdder(5);
+var add10 = makeAdder(10);
+
+console.log(add5(2));  	// 7
+console.log(add5(22));  // 27
+console.log(add10(2)); 	// 12
+console.log(add10(90)); // 100
+</script>
+</body>
+</html>
