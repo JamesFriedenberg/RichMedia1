@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" name="viewport" content="initial-scale=1.0" />
+ 	<title>Restaurant Locator</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+     
+     <!-- Add this to <head> -->
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- Add this after vue.js -->
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCM9jk-IEt6YQ2_hVcTYlCI5yzQwY6KhR0&callback=initMap" type="text/javascript"></script>
+</head>
+
+<body>
+<div id="mapContainer">
+    <div id="map"></div>
+</div>
+<div id="root">
+    <div id="controls">
+        <!--<coord-button></coord-button>-->
+        <select class="selector" id="location"></select>
+        <select class="selector" id="urlType"></select>
+        <select class="selector" id="mapType"></select>
+    </div>
+</div>
+
+<script>
+    Vue.component('coord-button',{
+	    props: ['latitude','longitude'],
+	    template: `<button id="locGetter" @click="getCenterCoords" v-bind:latitude="getCenterCoords().latitude" v-bind:longitude="getCenterCoords().longitude">Find Restaurants!</button>`
+    });
+
+    let map;
+    let infowindow;
+    
+    const app = new Vue({
+        el: '#root',
+        data: {
+            latitude: 0,
+            longitude: 0,
+            result: {}
+        },
+        created(){
+            this.search()
+        },
+	    methods:{
+	        search(){
+                //zomato url needs to grab latitude and longitude from the vue instance's data field, and the lat/lng of the vue data field is grabbed by a v-bind in a button that 
+                //calls the getCenterCoords helper function
+                fetch("https://developers.zomato.com/api/v2.1/geocode?lat=43.083848&lon=-77.6799&apikey=7eb8ce54a0c0662aad3a5c9d2ca1dc9f")
+                .then(response => {
+                    if(!response.status == 200){
+                        throw Error(`ERROR: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(json => {	
+                    console.log(json);
+                    this.result = json;
+                })
+            },
+            getRestaurantCoords(){
+                
+            }
+	    }
+    });
+
+    //initializes the google map instance and centers it at rit
+    function initMap() {
+        let mapOptions = {
+          center: {lat:43.083848, lng:-77.6799},
+          zoom: 14,
+          mapTypeId: google.maps.MapTypeId.SATELLITE
+        };
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        map.setTilt(45);
+    };
+
+    //helper function for getting the lat and lng of the current center of the map
+    function getCenterCoords() {
+        let coordsObj = map.getCenter();
+        let latitude = coordsObj.lat();
+        let longitude = coordsObj.lng();
+        
+        let returnObj = {latitude, longitude};
+        console.log(returnObj);
+        
+        return returnObj;
+    }
+</script>
+
+</body>
+</html>
